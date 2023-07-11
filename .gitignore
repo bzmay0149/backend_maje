@@ -1,0 +1,5 @@
+# Ignore the .venv folder at the root of the repository 
+/.venv
+
+# Ignore the __pycache__ folder anywhere in the repository
+__pycache__/
