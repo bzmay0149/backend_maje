@@ -6,6 +6,10 @@ def create_app():
 
 app = create_app()
 
+def create_Secret_key():
+   key = app.secret_key="secret"
+   return key
+
 create_connection()
 
 
