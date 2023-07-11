@@ -1,5 +1,5 @@
 from flask import Flask
-from dataBase.connect_db import create_connection
+from database.connect_db import create_connection
 def create_app():
     app=Flask(__name__) 
     return app
