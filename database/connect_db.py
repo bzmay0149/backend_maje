@@ -5,11 +5,16 @@ import mysql.connector
 def create_connection():
     try:
         connection = mysql.connector.connect(
-            host="localhost",
+            host="containers-us-west-79.railway.app",
             user="root",
-            password="admin",
-            database="zurtek",
-            port="3306"
+            password="LxKHUTWgbrFrgyYW7gvq",
+            database="railway",
+            port="6899"
+            # host="localhost",
+            # user="root",
+            # password="admin",
+            # database="zurtek",
+            # port="3306"
         )
         print("Connection established")
         return connection

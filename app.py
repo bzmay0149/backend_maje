@@ -1,17 +1,16 @@
 from flask import Flask
 from database.connect_db import create_connection
+from models.create_table import create_tables
 def create_app():
     app=Flask(__name__) 
     return app
 
 app = create_app()
 
-def create_Secret_key():
-   key = app.secret_key="secret"
-   return key
 
-create_connection()
 
+
+create_tables()
 
 
 
