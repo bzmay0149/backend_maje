@@ -2,9 +2,11 @@ from flask import Flask, request,jsonify
 from errno import errorcode
 import mysql.connector
 import jwt
+from flask_cors import CORS
 
 app = Flask(__name__)
 
+CORS(app)
 #coneccion a la base de datos
 
 def create_connection():
@@ -335,18 +337,50 @@ def adduser():
         }
         
         password_encode = jwt.encode(payload, app.secret_key, algorithm='HS256')
-        
         print (password_encode)
         
         con = create_connection()
         cur = con.cursor()
         
-        cur.execute("INSERT INTO users (username, password) VALUES (%s, %s)", (username, password_encode))
+        cur.execute("INSERT INTO user (username, password) VALUES (%s, %s)", (username, password_encode))
         con.commit()
         con.close()
         return jsonify({'message': 'Usuario creado correctamente'}), 201
     except Exception as e:
         return jsonify({'message': str(e)}), 400
-   
+    
+    
+from flask import jsonify
+
+@app.route('/login', methods=['GET'])
+def login():
+    try:
+        username = request.form.get('username')
+        password = request.form.get('password')
+        
+        print(username)
+        print(password)
+
+        # Realizar la autenticación y validación del usuario aquí
+        
+        # Si la autenticación es exitosa, se puede enviar una respuesta de éxito al cliente
+        response = jsonify({'message': 'Autenticación exitosa'})
+        response.status_code = 200
+        return response
+
+        # Si la autenticación falla, se puede enviar una respuesta de error al cliente
+        # response = jsonify({'message': 'Error de autenticación'})
+        # response.status_code = 401
+        # return response
+
+    except Exception as e:
+        # En caso de que ocurra una excepción, se puede enviar una respuesta de error al cliente
+        response = jsonify({'message': str(e)})
+        response.status_code = 400
+        return response
+
 if __name__ == '__main__':
     app.run(debug=True)
+    
+    
+                                                                                                                                    
