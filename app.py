@@ -1,12 +1,15 @@
-from flask import Flask, request,jsonify
+from flask import Flask, request,jsonify, session
 from errno import errorcode
 import mysql.connector
 import jwt
 from flask_cors import CORS
 
+
 app = Flask(__name__)
 
-CORS(app)
+app.secret_key = "kishirika"
+
+CORS(app, resources={r"/*": {"origins": "http://localhost:8080"}})
 #coneccion a la base de datos
 
 def create_connection():
@@ -330,7 +333,7 @@ def adduser():
         password = data_postman['password']
         print (username)
         print (password)
-        app.secret_key = "kishirika"
+        
         
         payload = {
             'password': password
@@ -349,35 +352,52 @@ def adduser():
     except Exception as e:
         return jsonify({'message': str(e)}), 400
     
-    
-from flask import jsonify
 
-@app.route('/login', methods=['GET'])
+@app.route('/login', methods=['POST'])
 def login():
     try:
-        username = request.form.get('username')
-        password = request.form.get('password')
+        data = request.get_json()
+        username = data.get('username')
+        password = data.get('password')
         
-        print(username)
-        print(password)
-
-        # Realizar la autenticación y validación del usuario aquí
         
-        # Si la autenticación es exitosa, se puede enviar una respuesta de éxito al cliente
-        response = jsonify({'message': 'Autenticación exitosa'})
-        response.status_code = 200
-        return response
+        con = create_connection()
+        cur = con.cursor()
+        cur.execute("SELECT * FROM users WHERE username = %s", (username,))
+        user = cur.fetchone()
+        con.close()
+        username_db = user[1]
+        password_db = user[2]
 
-        # Si la autenticación falla, se puede enviar una respuesta de error al cliente
-        # response = jsonify({'message': 'Error de autenticación'})
-        # response.status_code = 401
-        # return response
+        print (f"esta es la contraseña {password_db}")
 
+        password_uncoded = jwt.decode(password_db, options={"verify_signature": False})
+        password_uncoded = password_uncoded['password']
+        print(password_uncoded)
+        payload = {
+            'password': password_db,
+            'username': username_db,
+        }
+
+        session = jwt.encode (payload, app.secret_key, algorithm='HS256')
+        print (session)
+
+        if username_db == username and password_uncoded == password:
+            return session
+        else:
+            return jsonify({'message': 'Usuario o contraseña incorrectos'})
+
+        
+        
+    
+
+        
+
+        return jsonify({'message': 'Usuario creado correctamente'})
+    
     except Exception as e:
-        # En caso de que ocurra una excepción, se puede enviar una respuesta de error al cliente
-        response = jsonify({'message': str(e)})
-        response.status_code = 400
-        return response
+        return jsonify({'message': str(e)}), 400
+
 
 if __name__ == '__main__':
     app.run(debug=True)
