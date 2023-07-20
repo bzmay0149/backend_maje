@@ -78,3 +78,18 @@ def get_customers():
 
     
     return data
+
+
+@customers_bp.route("/delete/<int:id>", methods=["DELETE"])
+def delete_customer(id):
+    try:
+        if not isinstance(id, int) or id <= 0:
+            return {"message": "Invalid customer ID"}, 400
+
+        with create_connection() as con, con.cursor() as cur:
+            cur.execute("DELETE FROM customers WHERE idcustomer = %s", (id,))
+            con.commit()
+
+        return {"message": "Customer deleted successfully"}, 204
+    except Exception as e:
+        return {"message": "Error deleting customer"}, 500
