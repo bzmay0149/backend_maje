@@ -352,32 +352,16 @@ def adduser():
     
 from flask import jsonify
 
-@app.route('/login', methods=['GET'])
+@app.route('/login', methods=['POST'])
 def login():
-    try:
-        username = request.form.get('username')
-        password = request.form.get('password')
+  
+        username = request.json.get('username')
+        password = request.json.get('password')
         
         print(username)
         print(password)
+        return jsonify({'message': 'Usuario creado correctamente'}), 201
 
-        # Realizar la autenticación y validación del usuario aquí
-        
-        # Si la autenticación es exitosa, se puede enviar una respuesta de éxito al cliente
-        response = jsonify({'message': 'Autenticación exitosa'})
-        response.status_code = 200
-        return response
-
-        # Si la autenticación falla, se puede enviar una respuesta de error al cliente
-        # response = jsonify({'message': 'Error de autenticación'})
-        # response.status_code = 401
-        # return response
-
-    except Exception as e:
-        # En caso de que ocurra una excepción, se puede enviar una respuesta de error al cliente
-        response = jsonify({'message': str(e)})
-        response.status_code = 400
-        return response
 
 if __name__ == '__main__':
     app.run(debug=True)
