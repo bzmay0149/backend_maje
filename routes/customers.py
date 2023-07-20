@@ -10,42 +10,34 @@ def add_cliente():
         con = create_connection()
         cur = con.cursor()
 
-        postman = request.get_json()
+        data = request.get_json()
 
-        name = postman["name"]
-        lastname = postman["lastname"]
-        phone = postman["phone"]
-        email = postman["email"]
-        address = postman["address"]
-        city = postman["city"]
-        province = postman["province"]
-        postal_code = postman["postal_code"]
-        budget = postman["budget"]
-        accepted_budget = postman["accepted_budget"]
-        done = postman["done"]
-        invoiced = postman["invoiced"]
-        date = postman["date"]
+        name = data.get("nombre")
+        lastname = data.get("apellido")
+        phone = data.get("numero_telefonico")
+        email = data.get("correo")
+        address = data.get("direccion")
+        postal_code = data.get("codigo_postal")
+        city = data.get("ciudad")
+        province = data.get("provincia")
+        date = data.get("fecha")
+        description = data.get("descripcion")
+        budget = data.get("presupuesto_enviado")
+        accepted_budget = data.get("presupuesto_aceptado")
+        done = data.get("realizado")
+        invoiced = data.get("facturado")
 
-        cur.execute(
-            "INSERT INTO customers (name, lastname, phone, email, address, city, province, postal_code, budget, accepted_budget,  done, invoiced, date) VALUES (%s,  %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-            (
-                name,
-                lastname,
-                phone,
-                email,
-                address,
-                city,
-                province,
-                postal_code,
-                budget,
-                accepted_budget,
-                done,
-                invoiced,
-                date,
-            ),
-        )
+        print(name, lastname, phone, email, address, city, province, description, postal_code, budget, accepted_budget, done, invoiced, date)
+
+        query = """
+        INSERT INTO customers (name, lastname, phone, email, address, city, province, postal_code, description, budget, accepted_budget, done, invoiced, date)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """
+
+        cur.execute(query, (name, lastname, phone, email, address, city, province, postal_code, description, budget, accepted_budget, done, invoiced, date))
         con.commit()
         con.close()
+
         return {"message": "Client added successfully"}, 201
 
     except Exception as e:
@@ -54,12 +46,14 @@ def add_cliente():
         return {"message": "Error adding client"}, 500
 
 
+
 @customers_bp.route("/", methods=["GET"])
 def get_customers():
     con = create_connection()
     cur = con.cursor()
     cur.execute("SELECT *FROM customers ORDER BY date DESC")
     data_cunstomers = cur.fetchall()
+    print(data_cunstomers)
 
     data = [
         {
@@ -74,12 +68,13 @@ def get_customers():
             "postal_code": x[8],
             "budget": x[9],
             "accepted_budget": x[10],
-            "date": x[11],
-            "done": x[12],
-            "invoiced": x[13],
+            "date": x[13],
+            "done": x[11],
+            "invoiced": x[12],
+            "description": x[14]
         }
         for x in data_cunstomers
     ]
 
-    print(data)
+    
     return data
