@@ -93,3 +93,32 @@ def delete_customer(id):
         return {"message": "Customer deleted successfully"}, 204
     except Exception as e:
         return {"message": "Error deleting customer"}, 500
+
+@customers_bp.route("/update/<int:id>", methods=["PUT"])
+def actualizar_cliente(cliente_id):
+    # Aquí obtienes los datos enviados en la solicitud PUT
+    datos_cliente = request.json()
+    
+    budget = datos_cliente['budget']
+    accepted_budget = datos_cliente['accepted_budget']
+    done = datos_cliente['done']
+    invoiced = datos_cliente['invoiced']
+
+    # Luego, puedes usar el cliente_id para identificar el cliente en la base de datos
+    # y actualizar los campos correspondientes con los datos nuevos.
+    # Puedes usar alguna librería ORM o el acceso directo a la base de datos, dependiendo de cómo estés manejando la conexión con la base de datos.
+
+    # Ejemplo de cómo actualizar el cliente en una lista de clientes en memoria:
+    
+        
+            cliente['budget'] = datos_cliente['budget']
+            cliente['accepted_budget'] = datos_cliente['accepted_budget']
+            cliente['done'] = datos_cliente['done']
+            cliente['invoiced'] = datos_cliente['invoiced']
+
+    # Aquí devuelves una respuesta, por ejemplo, un mensaje de éxito.
+    return jsonify({'message': 'Cliente actualizado correctamente'})
+
+# Si estás usando Flask en modo de desarrollo, puedes ejecutar tu aplicación con:
+if __name__ == '__main__':
+    app.run(debug=True)
